@@ -63,3 +63,5 @@ hs_err_pid*
 hs_err_pid*
 *.iml
 .idea/
+data/*
+!data/data.zip
