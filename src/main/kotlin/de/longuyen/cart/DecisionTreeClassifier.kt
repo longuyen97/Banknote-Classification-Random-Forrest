@@ -11,7 +11,7 @@ class DecisionTreeClassifier(dataset: Dataset, private val maxDepth: Int, privat
     private val classes: MutableList<Int> = classes(targets)
     private val root: Node
 
-    companion object{
+    companion object {
         private val logger = LoggerFactory.getLogger(DecisionTreeClassifier::javaClass.name)
     }
 
@@ -36,7 +36,7 @@ class DecisionTreeClassifier(dataset: Dataset, private val maxDepth: Int, privat
         val split = this.split(bestSplit.bestFeatureIndex, bestSplit.bestFeatureValue, features, targets)
         if (depth >= this.maxDepth) {
             root.target = split.target()
-        } else if(depth < this.maxDepth && this.features.size(0) > this.minSize) {
+        } else if (depth < this.maxDepth && this.features.size > this.minSize) {
             val leftBestSplit = bestSplit(split.leftFeature, split.leftTarget)
             root.left = Node(leftBestSplit.bestFeatureIndex, leftBestSplit.bestFeatureValue)
             this.constructTree(root.left!!, leftBestSplit, split.leftFeature, split.leftTarget, depth + 1)
@@ -47,21 +47,19 @@ class DecisionTreeClassifier(dataset: Dataset, private val maxDepth: Int, privat
         }
     }
 
-    private fun bestSplit(features: INDArray, targets: INDArray): BestSplit {
+    private fun bestSplit(features: Array<Array<Double>>, targets: Array<Int>): BestSplit {
         var bestFeatureIndex = 0
         var bestFeatureValue = 0.0
         var bestScore = Double.MIN_VALUE
 
-        val featuresMatrix = features.toDoubleMatrix()
-
-        for (y in featuresMatrix.indices) {
-            for (x in featuresMatrix[y].indices) {
-                val split = this.split(x, featuresMatrix[y][x], features, targets)
+        for (y in features.indices) {
+            for (x in features[y].indices) {
+                val split = this.split(x, features[y][x], features, targets)
                 val score = this.gini(split)
                 if (score > bestScore) {
                     bestScore = score
                     bestFeatureIndex = x
-                    bestFeatureValue = featuresMatrix[y][x]
+                    bestFeatureValue = features[y][x]
                 }
             }
         }
@@ -84,49 +82,50 @@ class DecisionTreeClassifier(dataset: Dataset, private val maxDepth: Int, privat
         return ret
     }
 
-    private fun split(attributeIndex: Int, attributeValue: Double, features: INDArray, targets: INDArray): Split {
-        val parentTargets = targets.toIntVector()
-        val parentFeatures = features.toDoubleMatrix()
-
+    private fun split(
+        attributeIndex: Int,
+        attributeValue: Double,
+        features: Array<Array<Double>>,
+        targets: Array<Int>
+    ): Split {
         val leftTargets: MutableList<Int> = mutableListOf()
         val leftFeatures: MutableList<Array<Double>> = mutableListOf()
         val rightTargets: MutableList<Int> = mutableListOf()
         val rightFeatures: MutableList<Array<Double>> = mutableListOf()
 
-        for (y in parentFeatures.indices) {
-            if (parentFeatures[y][attributeIndex] > attributeValue) {
-                rightTargets.add(parentTargets[y])
-                rightFeatures.add(parentFeatures[y].toTypedArray())
+        for (y in features.indices) {
+            if (features[y][attributeIndex] > attributeValue) {
+                rightTargets.add(targets[y])
+                rightFeatures.add(features[y])
             } else {
-                leftTargets.add(parentTargets[y])
-                leftFeatures.add(parentFeatures[y].toTypedArray())
+                leftTargets.add(targets[y])
+                leftFeatures.add(features[y])
             }
         }
-        return Split(leftFeatures.toTypedArray(),
+        return Split(
+            leftFeatures.toTypedArray(),
             leftTargets.toTypedArray(),
             rightFeatures.toTypedArray(),
             rightTargets.toTypedArray()
         )
     }
 
-    private fun proportion(targets: INDArray, target: Int): Double {
-        val vector = targets.toIntVector()
-        if (vector.isEmpty()) {
+    private fun proportion(targets: Array<Int>, target: Int): Double {
+        if (targets.isEmpty()) {
             throw IllegalArgumentException("Targets have no element. Very bad.")
         }
         var count = 0
-        for (y in vector) {
+        for (y in targets) {
             if (y == target) {
                 count += 1
             }
         }
-        return count.toDouble() / vector.size
+        return count.toDouble() / targets.size
     }
 
-    private fun classes(targets: INDArray): MutableList<Int> {
-        val vector = targets.toIntVector()
+    private fun classes(targets: Array<Int>): MutableList<Int> {
         val set = mutableSetOf<Int>()
-        for (y in vector) {
+        for (y in targets) {
             set.add(y)
         }
         return set.toList().sorted().toMutableList()
