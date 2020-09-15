@@ -1,11 +1,11 @@
 package de.longuyen.data
 
-import org.nd4j.linalg.api.ndarray.INDArray
-
 interface Dataset {
-    fun isContinuous(index: Int) : Boolean
+    fun featureName(index: Int) : String
 
-    fun features() : INDArray
+    fun isContinuous() : Boolean
 
-    fun targets() : INDArray
+    fun features() : Array<Array<Double>>
+
+    fun targets() : Array<Int>
 }

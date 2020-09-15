@@ -2,8 +2,6 @@ package de.longuyen.data
 
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVRecord
-import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.factory.Nd4j
 import java.io.FileReader
 
 
@@ -26,15 +24,24 @@ class BanknoteDataset : Dataset {
         }
     }
 
-    override fun isContinuous(index: Int): Boolean {
-        return mutableListOf(true, true, true, true)[index]
+    override fun featureName(index: Int): String {
+        return mutableListOf(
+            "Variance of Wavelet Transformed image",
+            "Skewness of Wavelet Transformed image",
+            "Curtosis of Wavelet Transformed image",
+            "Entropy of image"
+        )[index]
     }
 
-    override fun features(): INDArray {
-        return Nd4j.createFromArray(this.x.toTypedArray())
+    override fun isContinuous(): Boolean {
+        return true
     }
 
-    override fun targets(): INDArray {
-        return Nd4j.createFromArray(this.y.toTypedArray())
+    override fun features(): Array<Array<Double>> {
+        return this.x.toTypedArray()
+    }
+
+    override fun targets(): Array<Int> {
+        return this.y.toTypedArray()
     }
 }
