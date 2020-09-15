@@ -64,5 +64,6 @@ hs_err_pid*
 *.iml
 .idea/
 data/*
-!data/data.zip
+!data/banknote.zip
+!data/marketing.zip
 !data/tree.jpeg
