@@ -9,7 +9,7 @@ import java.io.FileReader
 
 class BanknoteDataset : Dataset {
     private val x: MutableList<Array<Double>> = mutableListOf()
-    private val y: MutableList<Double> = mutableListOf()
+    private val y: MutableList<Int> = mutableListOf()
 
     init {
         FileReader("data/banknote.csv").use {
@@ -19,7 +19,7 @@ class BanknoteDataset : Dataset {
                 for(i in 0 until 4) {
                     x.add(record[i].toDouble())
                 }
-                val y = record[4].toDouble()
+                val y = record[4].toInt()
                 this.x.add(x.toTypedArray())
                 this.y.add(y)
             }
@@ -30,11 +30,11 @@ class BanknoteDataset : Dataset {
         return mutableListOf(true, true, true, true)[index]
     }
 
-    override fun getX(): INDArray {
+    override fun features(): INDArray {
         return Nd4j.createFromArray(this.x.toTypedArray())
     }
 
-    override fun getY(): INDArray {
+    override fun targets(): INDArray {
         return Nd4j.createFromArray(this.y.toTypedArray())
     }
 }

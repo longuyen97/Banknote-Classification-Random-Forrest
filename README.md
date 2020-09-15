@@ -37,12 +37,16 @@ node purity refers to how mixed the training data assigned to each node is.
 
 Splitting continues until nodes contain a minimum number of training examples or a maximum tree depth is reached.
 
-####### Classification
+###### Classification
 
 The Gini index is the name of the cost function used to evaluate splits in a classification problem.
 
 THe parameters of Gini index involve one input attribute and one value of that attribute. They will be used to 
 divide training data into two groups of rows (hence binary tree).
+
+A Gini score gives an idea of how good a split is by how mixed the classes are in the two groups created
+by the split. A perfect seperation results in a Gini score of 0, whereas the worst case split
+that results in 50/50 classes in each group result in a Gini score of 0.5.
 
 ### Some disadvantages of CART
 - Decision trees can be unstable because small variations in the data might result in a completely different tree being 
