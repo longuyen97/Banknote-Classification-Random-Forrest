@@ -5,6 +5,10 @@ Decision Trees are excellent tools for helping you to choose between several cou
 They provide a highly effective structure within which you can lay out options and investigate the possible outcomes of choosing those options. 
 They also help you to form a balanced picture of the risks and rewards associated with each possible course of action.
 
+<div align="center">
+    <img src="data/tree.jpeg"/>
+</div>
+
 Decision trees have a number of advantages as a practical, useful managerial tool.
 - Comprehensive: A significant advantage of a decision tree is that it forces the consideration of all possible outcomes of a 
 decision and traces each path to a conclusion. It creates a comprehensive analysis of the consequences along each 
@@ -22,6 +26,10 @@ generated. This is called variance, which needs to be lowered by methods like ba
 where the features and samples are randomly sampled with replacement.
 - Decision tree learners create biased trees if some classes dominate. It is therefore recommended to balance the data set 
 prior to fitting with the decision tree.
+
+### Implementation details
+
+
 
 ### References
 - [CART (Algorithmus)](https://de.wikipedia.org/wiki/CART_(Algorithmus))
