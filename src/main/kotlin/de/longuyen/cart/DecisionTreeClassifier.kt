@@ -15,11 +15,13 @@ import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
- * Decision tree
+ * Decision tree class
+ * @param maxDepth how deep should the final tree be
+ * @param minSize how many data points should a tree node contains
  */
 class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth: Int, private val minSize: Int) {
-    private val features = dataset.features()
-    private val targets = dataset.targets()
+    private val features = dataset.xTrain(0.75)
+    private val targets = dataset.yTrain(0.75)
     private val classes: MutableList<Int> = classes(targets)
     private val root: Node
 
@@ -28,11 +30,16 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
     }
 
     /**
-     * Tree node
+     * Tree node class use to make a decision based on comparing the incoming new data with the data split point
+     * @param attributeIndex position of the data split point on the original dataset
+     * @param attributeValue value of the data split point
+     * @param depth the depth of this node from the absolute root
+     * @param target if the node is a leave, the target is the value new incoming data will get if the data's value is greater than @{attributeValue}
      */
     data class Node(val attributeIndex: Int, val attributeValue: Double, val depth: Int, var target: Int? = null) {
         var left: Node? = null
         var right: Node? = null
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -68,31 +75,60 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
         this.constructTree(root, bestSplit, features, targets, 1)
     }
 
-    fun visualize(width: Int, height: Int) {
+    /**
+     * Visualize the tree with GraphViz
+     */
+    fun visualize(width: Int, height: Int, target: String) {
         val graph: MutableGraph = mutGraph("Decision tree")
             .setDirected(true)
         val treeMap = mutableMapOf<Node, MutableNode>()
         val queue = mutableListOf(this.root)
-        treeMap[this.root] = mutNode("${root.depth}: ${dataset.featureName(root.attributeIndex)} > ${root.attributeValue}?")
+        treeMap[this.root] =
+            mutNode("${root.depth}: ${dataset.featureName(root.attributeIndex)} > ${root.attributeValue}?")
         while (queue.isNotEmpty()) {
             val current = queue.first()
-            if(current.left != null && current.right !== null){
+            if (current.left != null && current.right !== null) {
                 queue.add(current.left!!)
                 queue.add(current.right!!)
-                treeMap[current.left!!] = mutNode("${current.left!!.depth}: ${dataset.featureName(current.left!!.attributeIndex)} > ${current.left!!.attributeValue}?")
-                treeMap[current.right!!] = mutNode("${current.right!!.depth}: ${dataset.featureName(current.right!!.attributeIndex)} > ${current.right!!.attributeValue}?")
-                treeMap[current]!!.addLink(Factory.to(treeMap[current.left!!]!!).with(Style.BOLD, Label.of("Yes"), Color.GREEN))
-                treeMap[current]!!.addLink(Factory.to(treeMap[current.right!!]!!).with(Style.BOLD, Label.of("No"), Color.RED))
-            }else{
-                treeMap[current]!!.addLink(Factory.to(mutNode("${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${current.target!!}")).with(Style.BOLD, Label.of("Yes"), Color.GREEN))
-                treeMap[current]!!.addLink(Factory.to(mutNode("${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${(current.target!!).xor(1)}")).with(Style.BOLD, Label.of("No"), Color.RED))
+                treeMap[current.left!!] =
+                    mutNode("${current.left!!.depth}: ${dataset.featureName(current.left!!.attributeIndex)} > ${current.left!!.attributeValue}?")
+                treeMap[current.right!!] =
+                    mutNode("${current.right!!.depth}: ${dataset.featureName(current.right!!.attributeIndex)} > ${current.right!!.attributeValue}?")
+                treeMap[current]!!.addLink(
+                    Factory.to(treeMap[current.left!!]!!).with(Style.BOLD, Label.of("Yes"), Color.GREEN)
+                )
+                treeMap[current]!!.addLink(
+                    Factory.to(treeMap[current.right!!]!!).with(Style.BOLD, Label.of("No"), Color.RED)
+                )
+            } else {
+                treeMap[current]!!.addLink(
+                    Factory.to(mutNode("${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${current.target!!}"))
+                        .with(Style.BOLD, Label.of("Yes"), Color.GREEN)
+                )
+                treeMap[current]!!.addLink(
+                    Factory.to(
+                        mutNode(
+                            "${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${
+                                (current.target!!).xor(
+                                    1
+                                )
+                            }"
+                        )
+                    ).with(Style.BOLD, Label.of("No"), Color.RED)
+                )
             }
             queue.removeFirst()
         }
         graph.add(treeMap[this.root]!!)
-        Graphviz.fromGraph(graph).width(width).height(height).render(Format.PNG).toFile(File("target/output.png"))
+        Graphviz.fromGraph(graph).width(width).height(height).render(Format.PNG).toFile(File(target))
     }
 
+    /**
+     * Starts tree building by repeating this process recursively for each child until one of the condition will match:
+     * - All the tuples belong to the same attribute value.
+     * - There are no more remaining attributes.
+     * - There are no more instances.
+     */
     private fun constructTree(
         root: Node,
         bestSplit: BestSplit,
@@ -114,10 +150,15 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
         }
     }
 
+    /**
+     * Brute force the dataset, iterate every data point and its feature, compute the gini index and return the best possible split of this dataset.
+     * @param features features of the sub-dataset
+     * @param targets targets of the sub-dataset
+     */
     private fun bestSplit(features: Array<Array<Double>>, targets: Array<Int>): BestSplit {
         var bestFeatureIndex = 0
         var bestFeatureValue = 0.0
-        var bestScore = 0.5
+        var bestScore = 0.51
 
         for (y in features.indices) {
             for (x in features[y].indices) {
@@ -133,22 +174,45 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
         return BestSplit(bestFeatureIndex, bestFeatureValue, bestScore)
     }
 
+    /**
+     * Compute the gini score of the possible split. The formular can be found at https://de.wikipedia.org/wiki/Gini-Koeffizient
+     * @return 0.5 if the gini score is perfect and the node is pure, 0.0 if the gini score is the worst possible and the entropy of the node is high.
+     */
     private fun gini(split: Split): Double {
-        var ret = 0.0
+        fun proportion(targets: Array<Int>, target: Int): Double {
+            if (targets.isEmpty()) {
+                throw IllegalArgumentException("Targets have no element. Very bad.")
+            }
+            var count = 0
+            for (y in targets) {
+                if (y == target) {
+                    count += 1
+                }
+            }
+            return count.toDouble() / targets.size
+        }
+
+        var giniIndex = 0.0
         for (group in Group.values()) {
-            var score = 0.0
+            var groupScore = 0.0
             for (clazz in classes) {
                 try {
-                    val proportion = this.proportion(split.getTarget(group), clazz)
-                    score += proportion * proportion
+                    val classProportion = proportion(split.getTarget(group), clazz)
+                    groupScore += classProportion * classProportion
                 } catch (e: Exception) {
                 }
             }
-            ret += (1.0 - score) * (split.groupSize(group) / split.totalSample())
+            giniIndex += (1.0 - groupScore) * (split.groupSize(group) / split.totalSample())
         }
-        return ret
+        return giniIndex
     }
 
+    /**
+     * Do a split of the sub-dataset based on the attribute and the attribute value.
+     * Rows that have greater value at @{attributeIndex} will go to the left.
+     * Rows that have smaller value at @{attributeIndex} will go to the right.
+     * @return the split of these parameters
+     */
     private fun split(
         attributeIndex: Int,
         attributeValue: Double,
@@ -177,19 +241,9 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
         )
     }
 
-    private fun proportion(targets: Array<Int>, target: Int): Double {
-        if (targets.isEmpty()) {
-            throw IllegalArgumentException("Targets have no element. Very bad.")
-        }
-        var count = 0
-        for (y in targets) {
-            if (y == target) {
-                count += 1
-            }
-        }
-        return count.toDouble() / targets.size
-    }
-
+    /**
+     * @return every distinct classes of the targets subset
+     */
     private fun classes(targets: Array<Int>): MutableList<Int> {
         val set = mutableSetOf<Int>()
         for (y in targets) {

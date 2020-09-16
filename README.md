@@ -12,7 +12,7 @@ They also help you to form a balanced picture of the risks and rewards associate
 Decision trees have a number of advantages as a practical, useful managerial tool.
 - Easy to Use: Decision trees are easy to use and explain with simple math, no complex formulas. They present visually 
 all of the decision alternatives for quick comparisons in a format that is easy to understand with only brief explanations.
-- Decision trees require relatively little effort from users for data preparation.#
+- Decision trees require relatively little effort from users for data preparation.
 - Can handle both numerical and categorical data. Can also handle multi-output problems.
 - Nonlinear relationships between parameters do not affect tree performance.
 

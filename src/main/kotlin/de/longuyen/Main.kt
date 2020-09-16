@@ -7,6 +7,6 @@ fun main() {
     val dataset = BanknoteDataset()
     dataset.shuffle()
     val tree = DecisionTreeClassifier(dataset, 3, 1)
-    tree.visualize(1500, 750)
+    tree.visualize(1500, 750, "target/output.png")
 }
 

@@ -1,5 +1,12 @@
 package de.longuyen.cart
 
+/**
+ * Represent the result of a dataset split
+ * @param leftFeature features of the left split
+ * @param leftTarget targets of the left split
+ * @param rightFeature features of the right split
+ * @param rightTarget targets of the right split
+ */
 data class Split(val leftFeature: Array<Array<Double>>, val leftTarget: Array<Int>, val rightFeature: Array<Array<Double>>, val rightTarget: Array<Int>) {
     fun getTarget(group: Group): Array<Int> {
         if (group == Group.LEFT) {

@@ -3,8 +3,12 @@ package de.longuyen.data
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVRecord
 import java.io.FileReader
+import java.lang.Double.max
+import java.lang.Double.min
 
-
+/**
+ * Bank note dataset. Original source: http://archive.ics.uci.edu/ml/datasets/banknote+authentication
+ */
 class BanknoteDataset : Dataset {
     private val x: MutableList<Array<Double>> = mutableListOf()
     private val y: MutableList<Int> = mutableListOf()
@@ -43,6 +47,26 @@ class BanknoteDataset : Dataset {
 
     override fun targets(): Array<Int> {
         return this.y.toTypedArray()
+    }
+
+    override fun xTrain(percentage: Double): Array<Array<Double>> {
+        val clippedPercentage = min(1.0, max(0.0, percentage))
+        return this.x.toTypedArray().copyOfRange(0, (x.size * clippedPercentage).toInt())
+    }
+
+    override fun yTrain(percentage: Double): Array<Int> {
+        val clippedPercentage = min(1.0, max(0.0, percentage))
+        return this.y.toTypedArray().copyOfRange(0, (x.size * clippedPercentage).toInt())
+    }
+
+    override fun xTest(percentage: Double): Array<Array<Double>> {
+        val clippedPercentage = min(1.0, max(0.0, percentage))
+        return this.x.toTypedArray().copyOfRange((x.size * clippedPercentage).toInt(), x.size)
+    }
+
+    override fun yTest(percentage: Double): Array<Int> {
+        val clippedPercentage = min(1.0, max(0.0, percentage))
+        return this.y.toTypedArray().copyOfRange((y.size * clippedPercentage).toInt(), y.size)
     }
 
     override fun shuffle() {
