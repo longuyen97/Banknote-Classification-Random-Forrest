@@ -1,9 +1,8 @@
 # Classification and regression trees (CART)
 
-Decision Trees are excellent tools for helping you to choose between several courses of action. They provide a highly effective structure within which you can lay out options and investigate the possible outcomes of choosing those options. 
-They also help you to form a balanced picture of the risks and rewards associated with each possible course of action.
+Decision Trees are what most people have in mind when questioned of machine learning. A clear path decision plan with if/else and you get a guide what to do at the end of the path. The difference between decision tree and if/else is, you don't have to program the rules of a decision tree yourself.
 
-Surprisingly, despite of the simplicity decision can be a very powerful tool. For many problems on [Kaggle](https://www.kaggle.com/) I could achieve
+Surprisingly, despite of the simplicity decision tree can be a very powerful tool. For many problems on [Kaggle](https://www.kaggle.com/) I could achieve
 a production-ready accuracy with a composition of many decision trees (also called random forrest).
 
 This repository is a case study of how decision tree implemented without any 3rd-party library can achieve a reasonable result for 
