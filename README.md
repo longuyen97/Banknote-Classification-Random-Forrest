@@ -9,6 +9,30 @@ a production-ready accuracy with a composition of many decision trees (also call
 This repository is a case study of how decision tree implemented without any 3rd-party library can achieve a reasonable result for 
 prediction analysis. The final result of a single decision tree will be compared with the result of composition of three decision trees.
 
+### Result
+The task was to classify banknote's authentication. Dataset can be found at: [www.uci.edu](https://archive.ics.uci.edu/ml/datasets/banknote+authentication):
+- **Dataset size**: 1372 samples
+- **Data shuffle**: Yes
+- **Data balanced**: Yes
+- **Training / Testing ratio**: 75/25
+
+Single decision tree provides a significant accuracy over random dummy model:
+- **Max depth**: 3
+- **Min leaf's size**: 1
+- **Average training accuracy of 100 random trees**: 0.76%
+- **Average testing accuracy of 100 random trees**: 0.73% 
+
+Random Forrest (Wisdom of the crowd) provides a significant boost of accuracy toward single decision tree:
+- **Forrest size**: 3
+- **Max depth**: 3
+- **Min leaf's size**: 1
+- **Average training accuracy of 100 random trees**: 0.87%
+- **Average testing accuracy of 100 random trees**: 0.88% 
+
+Visualization of a single decision tree:
+
+![](data/output.png)
+
 ### Implementation details
 
 The basic idea behind any decision tree algorithm is as follows:
@@ -31,28 +55,6 @@ forests of trees splitting with oblique hyperplanes can gain accuracy as they gr
 as long as the forests are randomly restricted to be sensitive to only selected feature dimensions. The accuracy of each single tree
 could be only slightly better than random, but the error of each tree is random. By combining many trees together, the error rate
 of the whole crowd converges to zero can therefore yields a much better result than each individual tree can do.
-
-### Result
-The task was to classify banknote's authentication. Dataset can be found at: [www.uci.edu](https://archive.ics.uci.edu/ml/datasets/banknote+authentication):
-- **Dataset size**: 1372 samples
-- **Data shuffle**: Yes
-- **Data balanced**: Yes
-- **Training / Testing ratio**: 75/25
-
-Single decision tree provides a significant accuracy over random dummy model:
-- **Max depth**: 3
-- **Min leaf's size**: 1
-- **Average training accuracy of 100 random trees**: 0.76%
-- **Average testing accuracy of 100 random trees**: 0.73% 
-
-Random Forrest (Wisdom of the crowd) provides a significant boost of accuracy toward single decision tree:
-- **Forrest size**: 3
-- **Max depth**: 3
-- **Min leaf's size**: 1
-- **Average training accuracy of 100 random trees**: 0.87%
-- **Average testing accuracy of 100 random trees**: 0.88% 
-
-![](data/output.png)
 
 ### Some disadvantages of CART
 - Decision trees can be unstable because small variations in the data might result in a completely different tree being 
