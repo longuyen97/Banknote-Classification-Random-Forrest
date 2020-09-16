@@ -75,6 +75,26 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
         this.constructTree(root, bestSplit, features, targets, 1)
     }
 
+    fun predict(features: Array<Array<Double>>) : Array<Int> {
+        val predictions = mutableListOf<Int>()
+        for(feature in features){
+            predictions.add(this.predict(feature))
+        }
+        return predictions.toTypedArray()
+    }
+
+    fun predict(feature: Array<Double>) : Int {
+        var current = this.root;
+        while(current.left != null && current.right !== null){
+            current = if(feature[current.attributeIndex] > current.attributeValue){
+                current.right!!
+            }else{
+                current.left!!
+            }
+        }
+        return current.target!!
+    }
+
     /**
      * Visualize the tree with GraphViz
      */
