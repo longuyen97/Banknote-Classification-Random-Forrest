@@ -1,6 +1,6 @@
 # Classification and regression trees for banknote authentication (CART)
 
-<img src="data/us-banknote.jpg" align="center">
+<img src="data/uk-banknote.png" align="center">
 
 Decision Trees are what most people have in mind when questioned of machine learning. A clear path decision plan with if/else and you get a guide what to do at the end of the path. The difference between decision tree and if/else is, you don't have to program the rules of a decision tree yourself.
 
