@@ -1,20 +1,13 @@
 # Classification and regression trees (CART)
 
-Decision Trees are excellent tools for helping you to choose between several courses of action.
-
-They provide a highly effective structure within which you can lay out options and investigate the possible outcomes of choosing those options. 
+Decision Trees are excellent tools for helping you to choose between several courses of action. They provide a highly effective structure within which you can lay out options and investigate the possible outcomes of choosing those options. 
 They also help you to form a balanced picture of the risks and rewards associated with each possible course of action.
 
-<div align="center">
-    <img src="data/tree.jpeg"/>
-</div>
+Surprisingly, despite of the simplicity decision can be a very powerful tool. For many problems on [Kaggle](https://www.kaggle.com/) I could achieve
+a production-ready accuracy with a composition of many decision trees (also called random forrest).
 
-Decision trees have a number of advantages as a practical, useful managerial tool.
-- Easy to Use: Decision trees are easy to use and explain with simple math, no complex formulas. They present visually 
-all of the decision alternatives for quick comparisons in a format that is easy to understand with only brief explanations.
-- Decision trees require relatively little effort from users for data preparation.
-- Can handle both numerical and categorical data. Can also handle multi-output problems.
-- Nonlinear relationships between parameters do not affect tree performance.
+This repository is a case study of how decision tree implemented without any 3rd-party library can achieve a reasonable result for 
+prediction analysis. The final result of a single decision tree will be compared with the result of composition of three decision trees.
 
 ### Implementation details
 
@@ -36,12 +29,24 @@ by the split. A perfect seperation results in a Gini score of 0, whereas the wor
 that results in 50/50 classes in each group result in a Gini score of 0.5.
 
 ### Result
-
-Decision tree for classifying banknote's authentication. Dataset can be found at: [www.uci.edu](https://archive.ics.uci.edu/ml/datasets/banknote+authentication). Following settings were used:
+The task was to classify banknote's authentication. Dataset can be found at: [www.uci.edu](https://archive.ics.uci.edu/ml/datasets/banknote+authentication):
 - **Dataset size**: 1372 samples
+- **Data shuffle**: Yes
+- **Data balanced**: Yes
 - **Training / Testing ratio**: 75/25
+
+Single decision tree provides a significant accuracy over random dummy model:
+- **Max depth**: 3
+- **Min leaf's size**: 1
 - **Average training accuracy of 100 random trees**: 0.76%
 - **Average testing accuracy of 100 random trees**: 0.73% 
+
+Random Forrest (Wisdom of the crowd) provides a significant boost of accuracy toward single decision tree:
+- **Forrest size**: 3
+- **Max depth**: 3
+- **Min leaf's size**: 1
+- **Average training accuracy of 100 random trees**: 0.87%
+- **Average testing accuracy of 100 random trees**: 0.88% 
 
 ![](data/output.png)
 

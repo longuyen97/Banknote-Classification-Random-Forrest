@@ -19,9 +19,7 @@ import java.io.File
  * @param maxDepth how deep should the final tree be
  * @param minSize how many data points should a tree node contains
  */
-class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth: Int, private val minSize: Int) {
-    private val features = dataset.xTrain(0.75)
-    private val targets = dataset.yTrain(0.75)
+class DecisionTreeClassifier(private val dataset: Dataset, private val features: Array<Array<Double>>, targets: Array<Int>, private val maxDepth: Int, private val minSize: Int) {
     private val classes: MutableList<Int> = classes(targets)
     private val root: Node
 
