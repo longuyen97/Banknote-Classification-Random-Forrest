@@ -37,12 +37,11 @@ that results in 50/50 classes in each group result in a Gini score of 0.5.
 
 ### Result
 
-Decision tree for classifying banknote's authentication. Dataset can be found at: https://archive.ics.uci.edu/ml/datasets/banknote+authentication.
-
-**Dataset size**: 1300 samples
-**Training / Testing ratio**: 75/25
-**Average training accuracy of 100 random trees**: 0.76%
-**Average testing accuracy of 100 random trees**: 0.73% 
+Decision tree for classifying banknote's authentication. Dataset can be found at: [www.uci.edu](https://archive.ics.uci.edu/ml/datasets/banknote+authentication). Following settings were used:
+- **Dataset size**: 1372 samples
+- **Training / Testing ratio**: 75/25
+- **Average training accuracy of 100 random trees**: 0.76%
+- **Average testing accuracy of 100 random trees**: 0.73% 
 
 ![](data/output.png)
 
