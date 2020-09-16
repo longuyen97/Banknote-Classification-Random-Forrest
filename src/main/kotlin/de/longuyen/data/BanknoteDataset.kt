@@ -26,10 +26,10 @@ class BanknoteDataset : Dataset {
 
     override fun featureName(index: Int): String {
         return mutableListOf(
-            "Variance of Wavelet Transformed image",
-            "Skewness of Wavelet Transformed image",
-            "Curtosis of Wavelet Transformed image",
-            "Entropy of image"
+            "Variance",
+            "Skewness",
+            "Curtosis",
+            "Entropy"
         )[index]
     }
 

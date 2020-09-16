@@ -67,3 +67,4 @@ data/*
 !data/banknote.zip
 !data/marketing.zip
 !data/tree.jpeg
+!data/output.png

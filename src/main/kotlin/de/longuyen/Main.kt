@@ -5,7 +5,7 @@ import de.longuyen.data.BanknoteDataset
 
 fun main() {
     val dataset = BanknoteDataset()
-    val tree = DecisionTreeClassifier(dataset, 1, 1)
-    println(tree)
+    val tree = DecisionTreeClassifier(dataset, 3, 1)
+    tree.visualize(1500, 750)
 }
 

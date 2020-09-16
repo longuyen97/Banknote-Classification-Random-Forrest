@@ -1,29 +1,96 @@
 package de.longuyen.cart
 
 import de.longuyen.data.Dataset
+import guru.nidi.graphviz.attribute.Color
+import guru.nidi.graphviz.attribute.Label
+import guru.nidi.graphviz.attribute.Style
+import guru.nidi.graphviz.engine.Format
+import guru.nidi.graphviz.engine.Graphviz
+import guru.nidi.graphviz.model.Factory
+import guru.nidi.graphviz.model.Factory.mutGraph
+import guru.nidi.graphviz.model.Factory.mutNode
+import guru.nidi.graphviz.model.MutableGraph
+import guru.nidi.graphviz.model.MutableNode
 import org.slf4j.LoggerFactory
-import java.lang.Exception
-import java.lang.IllegalArgumentException
+import java.io.File
 
-class DecisionTreeClassifier(dataset: Dataset, private val maxDepth: Int, private val minSize: Int) {
+/**
+ * Decision tree
+ */
+class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth: Int, private val minSize: Int) {
     private val features = dataset.features()
     private val targets = dataset.targets()
     private val classes: MutableList<Int> = classes(targets)
     private val root: Node
 
     companion object {
-        private val logger = LoggerFactory.getLogger(DecisionTreeClassifier::javaClass.name)
+        private val log = LoggerFactory.getLogger(DecisionTreeClassifier::javaClass.name)
     }
 
-    class Node(val attributeIndex: Int, val attributeValue: Double, var target: Int? = null) {
+    /**
+     * Tree node
+     */
+    data class Node(val attributeIndex: Int, val attributeValue: Double, val depth: Int, var target: Int? = null) {
         var left: Node? = null
         var right: Node? = null
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Node
+
+            if (attributeIndex != other.attributeIndex) return false
+            if (attributeValue != other.attributeValue) return false
+            if (depth != other.depth) return false
+            if (target != other.target) return false
+            if (left != other.left) return false
+            if (right != other.right) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = attributeIndex
+            result = 31 * result + attributeValue.hashCode()
+            result = 31 * result + depth
+            result = 31 * result + (target ?: 0)
+            result = 31 * result + (left?.hashCode() ?: 0)
+            result = 31 * result + (right?.hashCode() ?: 0)
+            return result
+        }
     }
 
     init {
+        log.info("Constructing decision tree with max depth ${this.maxDepth} and minimal split size ${this.minSize}")
         val bestSplit = bestSplit(features, targets)
-        this.root = Node(bestSplit.bestFeatureIndex, bestSplit.bestFeatureValue)
+        this.root = Node(bestSplit.bestFeatureIndex, bestSplit.bestFeatureValue, 0)
+        log.info("Constructed root with feature '${dataset.featureName(bestSplit.bestFeatureIndex)}', value '${bestSplit.bestFeatureValue}' and a gini score of '${bestSplit.bestScore}'")
         this.constructTree(root, bestSplit, features, targets, 1)
+    }
+
+    fun visualize(width: Int, height: Int) {
+        val graph: MutableGraph = mutGraph("Decision tree")
+            .setDirected(true)
+        val treeMap = mutableMapOf<Node, MutableNode>()
+        val queue = mutableListOf(this.root)
+        treeMap[this.root] = mutNode("${root.depth}: ${dataset.featureName(root.attributeIndex)} > ${root.attributeValue}?")
+        while (queue.isNotEmpty()) {
+            val current = queue.first()
+            if(current.left != null && current.right !== null){
+                queue.add(current.left!!)
+                queue.add(current.right!!)
+                treeMap[current.left!!] = mutNode("${current.left!!.depth}: ${dataset.featureName(current.left!!.attributeIndex)} > ${current.left!!.attributeValue}?")
+                treeMap[current.right!!] = mutNode("${current.right!!.depth}: ${dataset.featureName(current.right!!.attributeIndex)} > ${current.right!!.attributeValue}?")
+                treeMap[current]!!.addLink(Factory.to(treeMap[current.left!!]!!).with(Style.BOLD, Label.of("Yes"), Color.GREEN))
+                treeMap[current]!!.addLink(Factory.to(treeMap[current.right!!]!!).with(Style.BOLD, Label.of("No"), Color.RED))
+            }else{
+                treeMap[current]!!.addLink(Factory.to(mutNode("${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${current.target!!}")).with(Style.BOLD, Label.of("Yes"), Color.GREEN))
+                treeMap[current]!!.addLink(Factory.to(mutNode("${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${(current.target!!).xor(1)}")).with(Style.BOLD, Label.of("No"), Color.RED))
+            }
+            queue.removeFirst()
+        }
+        graph.add(treeMap[this.root]!!)
+        Graphviz.fromGraph(graph).width(width).height(height).render(Format.PNG).toFile(File("target/output.png"))
     }
 
     private fun constructTree(
@@ -38,11 +105,11 @@ class DecisionTreeClassifier(dataset: Dataset, private val maxDepth: Int, privat
             root.target = split.target()
         } else if (depth < this.maxDepth && this.features.size > this.minSize) {
             val leftBestSplit = bestSplit(split.leftFeature, split.leftTarget)
-            root.left = Node(leftBestSplit.bestFeatureIndex, leftBestSplit.bestFeatureValue)
+            root.left = Node(leftBestSplit.bestFeatureIndex, leftBestSplit.bestFeatureValue, depth)
             this.constructTree(root.left!!, leftBestSplit, split.leftFeature, split.leftTarget, depth + 1)
 
             val rightBestSplit = bestSplit(split.rightFeature, split.rightTarget)
-            root.right = Node(rightBestSplit.bestFeatureIndex, rightBestSplit.bestFeatureValue)
+            root.right = Node(rightBestSplit.bestFeatureIndex, rightBestSplit.bestFeatureValue, depth)
             this.constructTree(root.right!!, rightBestSplit, split.rightFeature, split.rightTarget, depth + 1)
         }
     }
@@ -50,20 +117,20 @@ class DecisionTreeClassifier(dataset: Dataset, private val maxDepth: Int, privat
     private fun bestSplit(features: Array<Array<Double>>, targets: Array<Int>): BestSplit {
         var bestFeatureIndex = 0
         var bestFeatureValue = 0.0
-        var bestScore = Double.MIN_VALUE
+        var bestScore = 0.5
 
         for (y in features.indices) {
             for (x in features[y].indices) {
                 val split = this.split(x, features[y][x], features, targets)
                 val score = this.gini(split)
-                if (score > bestScore) {
+                if (score < bestScore) {
                     bestScore = score
                     bestFeatureIndex = x
                     bestFeatureValue = features[y][x]
                 }
             }
         }
-        return BestSplit(bestFeatureIndex, bestFeatureValue)
+        return BestSplit(bestFeatureIndex, bestFeatureValue, bestScore)
     }
 
     private fun gini(split: Split): Double {

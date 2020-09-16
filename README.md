@@ -48,6 +48,12 @@ A Gini score gives an idea of how good a split is by how mixed the classes are i
 by the split. A perfect seperation results in a Gini score of 0, whereas the worst case split
 that results in 50/50 classes in each group result in a Gini score of 0.5.
 
+### Result
+
+Decision tree for classifying banknote's authentication. Dataset can be found at: https://archive.ics.uci.edu/ml/datasets/banknote+authentication
+
+![](data/output.png)
+
 ### Some disadvantages of CART
 - Decision trees can be unstable because small variations in the data might result in a completely different tree being 
 generated. This is called variance, which needs to be lowered by methods like bagging and boosting.
