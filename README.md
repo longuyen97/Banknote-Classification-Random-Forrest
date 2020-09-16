@@ -22,11 +22,15 @@ Each attribute for each value of the record can be the best split index, so the 
   + There are no more instances.
 
 The parameters of Gini index involve one input attribute and one value of that attribute. They will be used to 
-divide training data into two groups of rows (hence binary tree).
-
-A Gini score gives an idea of how good a split is by how mixed the classes are in the two groups created
-by the split. A perfect seperation results in a Gini score of 0, whereas the worst case split
+divide training data into two groups of rows (hence binary tree). A Gini score gives an idea of how good a split is 
+by how mixed the classes are in the two groups created by the split. A perfect seperation results in a Gini score of 0, whereas the worst case split
 that results in 50/50 classes in each group result in a Gini score of 0.5.
+
+Random forrest on the otherhand is an abstract modelling concept which can be used for every machine learning algorithm. The basic idea is that 
+forests of trees splitting with oblique hyperplanes can gain accuracy as they grow without suffering from overtraining, 
+as long as the forests are randomly restricted to be sensitive to only selected feature dimensions. The accuracy of each single tree
+could be only slightly better than random, but the error of each tree is random. By combining many trees together, the error rate
+of the whole crowd converges to zero can therefore yields a much better result than each individual tree can do.
 
 ### Result
 The task was to classify banknote's authentication. Dataset can be found at: [www.uci.edu](https://archive.ics.uci.edu/ml/datasets/banknote+authentication):
