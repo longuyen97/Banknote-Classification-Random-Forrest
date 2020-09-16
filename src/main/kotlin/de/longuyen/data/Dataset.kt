@@ -8,4 +8,6 @@ interface Dataset {
     fun features() : Array<Array<Double>>
 
     fun targets() : Array<Int>
+
+    fun shuffle()
 }

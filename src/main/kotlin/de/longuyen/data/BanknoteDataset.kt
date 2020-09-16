@@ -44,4 +44,20 @@ class BanknoteDataset : Dataset {
     override fun targets(): Array<Int> {
         return this.y.toTypedArray()
     }
+
+    override fun shuffle() {
+        val indices = this.x.indices.toMutableList()
+        indices.shuffle()
+        for(i in 0 until indices.size){
+            val index = indices[i]
+
+            val xTemp = this.x[i]
+            this.x[i] = this.x[index]
+            this.x[index] = xTemp
+
+            val yTemp = this.y[i]
+            this.y[i] = this.y[index]
+            this.y[index] = yTemp
+        }
+    }
 }

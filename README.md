@@ -20,28 +20,15 @@ all of the decision alternatives for quick comparisons in a format that is easy 
 
 The basic idea behind any decision tree algorithm is as follows:
 
-- Select the best attribute using Attribute Selection Measures(ASM) to split the records.
-- Make that attribute a decision node and breaks the dataset into smaller subsets.
+- Select the best value of the best attribute using Gini Index to split the records. This is the computational most expensive process. 
+Each attribute for each value of the record can be the best split index, so the brute force approach must be used.
+- Make that best value of the best attribute a decision node and breaks the dataset into two smaller subsets.
 - Starts tree building by repeating this process recursively for each child until one of the condition will match:
   + All the tuples belong to the same attribute value.
   + There are no more remaining attributes.
   + There are no more instances.
 
-In other words, the split with the best cost (lowest cost because we minimize cost) is selected. All input variables and all 
-possible split points are evaluated and chosen in a greedy manner based on the cost function.
-
-*Regression*: The cost function that is minimized to choose split points is the *sum squared error* across all 
-training samples that fall within the rectangle.
-*Classification*: The *Gini cost function* is used which provides an indication of how pure the nodes are, where 
-node purity refers to how mixed the training data assigned to each node is.
-
-Splitting continues until nodes contain a minimum number of training examples or a maximum tree depth is reached.
-
-###### Classification
-
-The Gini index is the name of the cost function used to evaluate splits in a classification problem.
-
-THe parameters of Gini index involve one input attribute and one value of that attribute. They will be used to 
+The parameters of Gini index involve one input attribute and one value of that attribute. They will be used to 
 divide training data into two groups of rows (hence binary tree).
 
 A Gini score gives an idea of how good a split is by how mixed the classes are in the two groups created
