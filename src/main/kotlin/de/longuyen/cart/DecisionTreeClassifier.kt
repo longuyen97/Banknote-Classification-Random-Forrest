@@ -95,26 +95,19 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
                 treeMap[current.right!!] =
                     mutNode("${current.right!!.depth}: ${dataset.featureName(current.right!!.attributeIndex)} > ${current.right!!.attributeValue}?")
                 treeMap[current]!!.addLink(
-                    Factory.to(treeMap[current.left!!]!!).with(Style.BOLD, Label.of("Yes"), Color.GREEN)
+                    Factory.to(treeMap[current.left!!]!!).with(Style.BOLD, Label.of("No"), Color.GREEN)
                 )
                 treeMap[current]!!.addLink(
-                    Factory.to(treeMap[current.right!!]!!).with(Style.BOLD, Label.of("No"), Color.RED)
+                    Factory.to(treeMap[current.right!!]!!).with(Style.BOLD, Label.of("Yes"), Color.RED)
                 )
             } else {
                 treeMap[current]!!.addLink(
-                    Factory.to(mutNode("${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${current.target!!}"))
-                        .with(Style.BOLD, Label.of("Yes"), Color.GREEN)
+                    Factory.to(mutNode("${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${dataset.targetName(current.target!!)}"))
+                        .with(Style.BOLD, Label.of("No"), Color.GREEN)
                 )
                 treeMap[current]!!.addLink(
-                    Factory.to(
-                        mutNode(
-                            "${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${
-                                (current.target!!).xor(
-                                    1
-                                )
-                            }"
-                        )
-                    ).with(Style.BOLD, Label.of("No"), Color.RED)
+                    Factory.to(mutNode("${current.depth}: ${dataset.featureName(current.attributeIndex)} > ${current.attributeValue}: ${dataset.targetName((current.target!!).xor(1))}"))
+                        .with(Style.BOLD, Label.of("Yes"), Color.RED)
                 )
             }
             queue.removeFirst()
@@ -152,6 +145,7 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
 
     /**
      * Brute force the dataset, iterate every data point and its feature, compute the gini index and return the best possible split of this dataset.
+     *
      * @param features features of the sub-dataset
      * @param targets targets of the sub-dataset
      */
@@ -209,8 +203,10 @@ class DecisionTreeClassifier(private val dataset: Dataset, private val maxDepth:
 
     /**
      * Do a split of the sub-dataset based on the attribute and the attribute value.
-     * Rows that have greater value at @{attributeIndex} will go to the left.
-     * Rows that have smaller value at @{attributeIndex} will go to the right.
+     *
+     * Rows that have greater value at @{attributeIndex} will go to the right.
+     * Rows that have smaller value at @{attributeIndex} will go to the left.
+     *
      * @return the split of these parameters
      */
     private fun split(

@@ -37,6 +37,14 @@ class BanknoteDataset : Dataset {
         )[index]
     }
 
+    override fun targetName(target: Int): String {
+        return if(target == 0){
+            "Authentic"
+        } else{
+            "Not authentic"
+        }
+    }
+
     override fun isContinuous(): Boolean {
         return true
     }
