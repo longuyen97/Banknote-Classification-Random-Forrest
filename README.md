@@ -2,10 +2,10 @@
 
 <img src="data/uk-banknote.png" align="center">
 
-Decision Trees are what most people have in mind when questioned of machine learning. A clear path decision plan with if/else and you get a guide what to do at the end of the path. The difference between decision tree and if/else is, you don't have to program the rules of a decision tree yourself.
+Decision Trees are what most people have in mind when questioned of machine learning. A clear path decision plan with if/else and you get a guide what to do at the end of the path. The difference between decision tree and if/else is, you don't have to program the rules of a decision tree yourself. The principle is very simple, data as input and you get your rule set as output. The rule set is also very explainable (as in the result chapter), so you as an engineer will have an easier time explain the decision of your model to the bussiness and marketing side of the company.
 
 Surprisingly, despite of the simplicity decision tree can be a very powerful tool. For many problems on [Kaggle](https://www.kaggle.com/) I could achieve
-a production-ready accuracy with a composition of many decision trees (also called random forrest).
+a production-ready accuracy with a composition of many decision trees (also called random forrest). The training time and the memory foot print are also very great. As opposite to neural network, a reasonable good model of a very huge dataset can be somewhere between Kbs and Mbs.
 
 This repository is a case study of how decision tree implemented without any 3rd-party library can achieve a reasonable result for 
 prediction analysis. The final result of a single decision tree will be compared with the result of composition of three decision trees.
@@ -20,15 +20,15 @@ The task was to classify banknote's authentication. Dataset can be found at: [ww
 Single decision tree provides a significant accuracy over random dummy model:
 - **Max depth**: 3
 - **Min leaf's size**: 1
-- **Average training accuracy of 100 random trees**: 0.76%
-- **Average testing accuracy of 100 random trees**: 0.73% 
+- **Average training accuracy of 100 random trees**: 76%
+- **Average testing accuracy of 100 random trees**: 73% 
 
 Random Forrest (Wisdom of the crowd) provides a significant boost of accuracy toward single decision tree:
 - **Forrest size**: 3
 - **Max depth**: 3
 - **Min leaf's size**: 1
-- **Average training accuracy of 100 random trees**: 0.87%
-- **Average testing accuracy of 100 random trees**: 0.88% 
+- **Average training accuracy of 100 random trees**: 87%
+- **Average testing accuracy of 100 random trees**: 88% 
 
 Visualization of a single decision tree:
 
